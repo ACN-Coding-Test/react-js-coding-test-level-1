@@ -28,6 +28,117 @@
   color: #61dafb;
 }
 
+.pokemon{
+  cursor:pointer;
+  text-transform: capitalize;
+  border:2px solid yellow;
+  width:20rem;
+  text-align:center;
+  padding:0.3rem;
+  border-radius: 5px;
+}
+
+.pokemon:hover{
+  color:yellow;
+}
+
+table{
+  border-collapse: collapse;
+}
+td,th{
+  padding:0.7rem;
+  border-bottom: 1px solid #82ca9d;
+  text-align: left;
+}
+th{
+  color:#82ca9d;
+}
+td{
+  color:#67696f;
+}
+
+.flex{
+  display: flex;
+  flex-wrap: wrap;
+  gap:2rem;
+}
+
+button{
+  width:7rem;
+  padding:0.6rem;
+  cursor: pointer;
+  border:none;
+  border-radius: 5px;
+}
+
+.pdf{
+  margin-top: 1rem;
+  background-color:#82ca9d;
+  color:white;
+}
+
+.container{
+  display:flex;
+  flex-direction: column;
+  gap:0.7rem;
+  align-items: center;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap:1rem;
+}
+
+.paginationItem {
+  background:#000;
+  border: 2px solid yellow;
+  border-radius: 50%;
+  height: 45px;
+  width: 45px;
+  position: relative;
+  cursor: pointer;
+}
+
+.prev,
+.next {
+  background: #000;
+  border: 2px solid yellow;
+  color: yellow;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+.paginationItem.active {
+  border: 1px solid yellow;
+  color: rgb(179, 177, 177);
+  pointer-events: none;
+}
+
+.prev.disabled,
+.next.disabled {
+  pointer-events: none;
+  box-shadow: none;
+  color: rgb(170, 170, 170);
+}
+
+.search-sort{
+  display:flex;
+  gap:0.8rem;
+}
+
+.search-sort input,.search-sort select{
+  width:5rem;
+  padding:0.4rem;
+  border-radius:5px;
+  border:2px solid yellow;
+}
+
+.search-sort input{
+  width:10rem;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
