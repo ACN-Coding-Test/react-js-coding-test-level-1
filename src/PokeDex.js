@@ -38,8 +38,6 @@ function PokeDex() {
   const [currentPageStartingItem, setCurrentPageStartingItem] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingMode, setSortingMode] = useState("byname");
-
-  const [pokemonDetail, setPokemonDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const customStyles = {
@@ -56,7 +54,7 @@ function PokeDex() {
     overlay: { backgroundColor: "grey" },
   };
 
-  const totalPokemonsNumber = 1126;
+  const totalPokemonsNumber = 100;
 
   useEffect(() => {
     axios
