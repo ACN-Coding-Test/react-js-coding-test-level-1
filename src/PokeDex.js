@@ -38,8 +38,6 @@ function PokeDex() {
   const [currentPageStartingItem, setCurrentPageStartingItem] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingMode, setSortingMode] = useState("byname");
-
-  const [pokemonDetail, setPokemonDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const customStyles = {
@@ -56,7 +54,7 @@ function PokeDex() {
     overlay: { backgroundColor: "grey" },
   };
 
-  const totalPokemonsNumber = 1126;
+  const totalPokemonsNumber = 100;
 
   useEffect(() => {
     axios
@@ -218,17 +216,19 @@ function PokeDex() {
   // }
 
   const handlePrint = (divClassName, picture) => {
-    html2canvas(document.querySelector(`.${divClassName}Container`)).then(
-      (canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("l", "px", "a4", "false");
-        pdf.addImage(imgData, "PNG", 41, 20);
-        const img = new Image();
-        img.src = picture;
-        pdf.addImage(img, "PNG", 50, 55);
-        pdf.save(`${divClassName}.pdf`);
-      },
-    );
+    html2canvas(document.querySelector(`.${divClassName}Container`), {
+      scale: 4,
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("l", "px", "a4", "false");
+      const width = pdf.internal.pageSize.getWidth() - 20;
+      const height = pdf.internal.pageSize.getHeight() - 160;
+      pdf.addImage(imgData, "PNG", 10, 50, width, height);
+      const img = new Image(200, 200);
+      img.src = picture;
+      pdf.addImage(img, "PNG", 30, 90);
+      pdf.save(`${divClassName}.pdf`);
+    });
   };
 
   return (
