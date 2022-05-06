@@ -54,7 +54,7 @@ function PokeDex() {
     overlay: { backgroundColor: "grey" },
   };
 
-  const totalPokemonsNumber = 100;
+  const totalPokemonsNumber = 1126;
 
   useEffect(() => {
     axios
