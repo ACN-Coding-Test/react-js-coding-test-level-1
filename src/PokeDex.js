@@ -1,13 +1,57 @@
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, createRef } from "react";
 import ReactLoading from "react-loading";
 import axios from "axios";
 import Modal from "react-modal";
+import ReactToPdf from 'react-to-pdf'
+import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import Pagination from "./Pagination";
+
 
 function PokeDex() {
+  const ref = createRef();
   const [pokemons, setPokemons] = useState([]);
   const [pokemonDetail, setPokemonDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const sortData = (e) => {
+    if (e.target.value === "asd") {
+      setPokemons([...pokemons].sort((a, b) => a.name > b.name ? 1 : -1))
+    }
+    else if (e.target.value === "dsd") {
+      setPokemons([...pokemons].sort((a, b) => b.name > a.name ? 1 : -1))
+    }
+  }
+
+  const showModel = async (url) => {
+    try {
+      setIsLoading(true);
+      const result = await axios.get(url);
+      const data = await result.data;
+      setPokemonDetail(data);
+      if (pokemonDetail) setIsLoading(false);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
+  const getPokedex = async () => {
+    try {
+      setIsLoading(true);
+      const result = await axios.get("https://pokeapi.co/api/v2/pokemon");
+      const data = await result.data.results;
+      setPokemons(data);
+      if (pokemons) setIsLoading(false);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getPokedex();
+  }, [])
 
   const customStyles = {
     content: {
@@ -56,41 +100,87 @@ function PokeDex() {
           <>
             <div className="App">
               <header className="App-header">
-                <b>Implement loader here</b>
+                <ReactLoading />
               </header>
             </div>
           </>
         ) : (
           <>
+            <div className="search-sort">
+              <input type="search" name="search" placeholder="Search..." onChange={e => setQuery(e.target.value)} />
+              <select onChange={sortData} name="sort">
+                <option value="">Sort</option>
+                <option value="asd">ASD</option>
+                <option value="dsd">DSD</option>
+              </select>
+            </div>
             <h1>Welcome to pokedex !</h1>
-            <b>Implement Pokedex list here</b>
+            <Pagination
+              data={pokemons}
+              query={query}
+              pageLimit={pokemons.length / 5}
+              dataLimit={5}
+              showModel={showModel}
+            />
           </>
         )}
       </header>
       {pokemonDetail && (
         <Modal
-          isOpen={pokemonDetail}
+          isOpen={pokemonDetail ? true : false}
           contentLabel={pokemonDetail?.name || ""}
+          ariaHideApp={false}
           onRequestClose={() => {
             setPokemonDetail(null);
           }}
           style={customStyles}
         >
-          <div>
-            Requirement:
-            <ul>
-              <li>show the sprites front_default as the pokemon image</li>
-              <li>
-                Show the stats details - only stat.name and base_stat is
-                required in tabular format
-              </li>
-              <li>Create a bar chart based on the stats above</li>
-              <li>Create a  buttton to download the information generated in this modal as pdf. (images and chart must be included)</li>
-            </ul>
+          <div ref={ref}>
+            <img src={pokemonDetail.sprites.front_default} alt="" />
+            <div className="flex" >
+              <div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Base Stat</th>
+                      <th>Stat Name</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pokemonDetail.stats.map(({ base_stat, stat }, index) => (
+                      <tr key={index}>
+                        <td>
+                          {base_stat}
+                        </td>
+                        <td>
+                          {stat.name}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <BarChart width={300} height={200}
+                  data={pokemonDetail.stats}
+                >
+                  <XAxis dataKey={"stat.name"} />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey={"base_stat"} fill="#82ca9d" />
+                </BarChart>
+              </div>
+            </div>
           </div>
+          <ReactToPdf targetRef={ref} filename="pokemon.pdf" x="35">
+            {({ toPdf }) => (
+              <button className="pdf" onClick={toPdf}>Generate pdf</button>
+            )}
+          </ReactToPdf>
         </Modal>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
 
