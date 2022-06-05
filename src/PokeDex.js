@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import ReactLoading from "react-loading";
 import axios from "axios";
 import Modal from "react-modal";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 
 function PokeDex() {
   const [pokemons, setPokemons] = useState([]);
@@ -14,6 +14,8 @@ function PokeDex() {
   const [nextPageUrl, setNextPageUrl] = useState();
   const [prevPageUrl, setPrevPageUrl] = useState();
   const [sortType, setSortType] = useState([]);
+  const [pokemonInfo, setPokemonInfo] = useState([]);
+  const {name} = useParams();
 
   const customStyles = {
     content: {
@@ -61,6 +63,18 @@ function PokeDex() {
   function goToPrevPage() {
     setCurrentPageUrl(prevPageUrl);
   }
+
+  
+    const pokedexInfo = (name) => {
+      axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`)
+      .then(response => {
+        setIsLoading(false);
+        setPokemonInfo(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+    }
 
   if (!isLoading && pokemons.length === 0) {
     return (
@@ -119,7 +133,7 @@ function PokeDex() {
                 {
                   pokemons.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
                     .map((item, index) => {
-                      return <div key={index} className="card" onClick={() => setPokemonDetail(item)}>
+                      return <div key={index} className="card" onClick={() => {setPokemonDetail(item); pokedexInfo(item.name)}}>
                         <NavLink to={`/pokedex/${item.name}`} style={{ textDecoration: "none" }}>
                           <img src={item.sprites} alt='' width="500" height="300" />
                           <h6>{item.name}</h6>
@@ -159,12 +173,25 @@ function PokeDex() {
           </div>
           <div className="pokemon_detail_container">
             <div>
-              <img src={pokemonDetail} alt='' width="500" height="300"/>
+              <img src={pokemonInfo.sprites.front_default} alt='' width="200" height="200" />
             </div>
             <div>
-
+              <h6>{pokemonInfo.species.name}</h6>
             </div>
           </div>
+          {
+            pokemonInfo.stats.map((item) => {
+              return <div>
+                <table style={{width: '100%'}}>
+                  <tr>
+                    <td style={{width: '33%'}}>{item.base_stat}</td>
+                    <td style={{width: '33%'}}>{item.effort}</td>
+                    <td style={{width: '33%'}}>{item.stat.name}</td>
+                  </tr>
+                </table>
+              </div>
+            })
+          }
         </Modal>
       )}
     </div>
